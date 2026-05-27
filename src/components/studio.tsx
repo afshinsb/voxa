@@ -813,9 +813,7 @@ export function Studio() {
                           </div>
                         </div>
 
-                        <div className="flex">
-                          <Badge className="border-[rgba(var(--app-accent-rgb),0.22)] bg-[rgba(var(--app-accent-rgb),0.08)] text-xs text-[var(--app-accent-contrast)]">{profile.role}</Badge>
-                        </div>
+                        <p className="text-xs font-medium text-[var(--app-accent-contrast)]">{profile.role}</p>
                       </div>
                     </article>
                   );
