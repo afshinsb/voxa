@@ -1,6 +1,8 @@
 import { ApiError } from "@/lib/http";
 import { serverEnv } from "@/lib/env";
 import { missingEnvFor } from "@/lib/provider-config";
+import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
+import { elevenLabsPayload, elevenLabsVoiceId } from "./adapters/elevenlabs";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
 export class ElevenLabsTtsProvider implements TtsProvider {
@@ -13,7 +15,7 @@ export class ElevenLabsTtsProvider implements TtsProvider {
 
   async generateSpeech(input: TtsRequest): Promise<TtsResponse> {
     const apiKey = serverEnv("ELEVENLABS_API_KEY");
-    const voiceId = serverEnv("ELEVENLABS_VOICE_ID");
+    const voiceId = elevenLabsVoiceId(input);
 
     if (!apiKey || !voiceId) {
       throw new ApiError("ElevenLabs API key or voice id is not configured.", 500, "provider_not_configured");
@@ -25,16 +27,7 @@ export class ElevenLabsTtsProvider implements TtsProvider {
         "xi-api-key": apiKey,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        text: input.text,
-        model_id: this.model,
-        voice_settings: {
-          stability: input.style === "Energetic" ? 0.42 : 0.58,
-          similarity_boost: 0.82,
-          style: input.style === "Cinematic" ? 0.42 : 0.2,
-          use_speaker_boost: true,
-        },
-      }),
+      body: JSON.stringify(elevenLabsPayload(input, this.model)),
     });
 
     if (!response.ok) {
@@ -52,6 +45,14 @@ export class ElevenLabsTtsProvider implements TtsProvider {
       extension: "mp3",
       provider: this.name,
       model: this.model,
+      character: {
+        id: getVoiceCharacter(input.voice).id,
+        displayName: getVoiceCharacter(input.voice).displayName,
+      },
+      tone: {
+        id: getTonePreset(input.style).id,
+        displayName: getTonePreset(input.style).displayName,
+      },
     };
   }
 }

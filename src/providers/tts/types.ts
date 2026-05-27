@@ -1,20 +1,13 @@
+import type { TonePresetId, VoiceCharacterId } from "@/lib/voice-config";
+
 export type TtsProviderName = "openai" | "gemini" | "elevenlabs" | "mock";
 export type TtsGenerationMode = "balanced" | "lowest_quota" | "highest_consistency";
 export type TtsChunkingMode = "single" | "split";
-
-export type VoiceStyle =
-  | "Calm"
-  | "Warm"
-  | "Cheerful"
-  | "Whisper"
-  | "Energetic"
-  | "Cinematic"
-  | "Intimate"
-  | "Storyteller";
+export type VoiceStyle = TonePresetId;
 
 export interface TtsRequest {
   text: string;
-  voice: string;
+  voice: VoiceCharacterId;
   style: VoiceStyle;
   speed: number;
   language?: "fa" | "en" | "mixed";
@@ -28,6 +21,8 @@ export interface TtsResponse {
   extension: "mp3" | "wav";
   provider: TtsProviderName;
   model: string;
+  character: { id: VoiceCharacterId; displayName: string };
+  tone: { id: TonePresetId; displayName: string };
   durationHintSeconds?: number;
 }
 

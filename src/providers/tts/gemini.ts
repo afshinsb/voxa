@@ -1,7 +1,8 @@
 import { ApiError } from "@/lib/http";
 import { serverEnv } from "@/lib/env";
 import { missingEnvFor } from "@/lib/provider-config";
-import { buildGeminiSpeechPrompt } from "./prompt-adapters/gemini";
+import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
+import { buildGeminiSpeechPrompt, geminiVoiceName } from "./adapters/gemini";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
 function wavFromPcmBuffer(pcm: Buffer, sampleRate = 24000, channels = 1, bitsPerSample = 16) {
@@ -86,7 +87,7 @@ export class GeminiTtsProvider implements TtsProvider {
             speechConfig: {
               voiceConfig: {
                 prebuiltVoiceConfig: {
-                  voiceName: serverEnv("GEMINI_TTS_VOICE", "Kore"),
+                  voiceName: geminiVoiceName(input),
                 },
               },
             },
@@ -140,6 +141,14 @@ export class GeminiTtsProvider implements TtsProvider {
       extension: "wav",
       provider: this.name,
       model: this.model,
+      character: {
+        id: getVoiceCharacter(input.voice).id,
+        displayName: getVoiceCharacter(input.voice).displayName,
+      },
+      tone: {
+        id: getTonePreset(input.style).id,
+        displayName: getTonePreset(input.style).displayName,
+      },
     };
   }
 }

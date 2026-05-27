@@ -18,6 +18,8 @@ For long narration, OpenAI or ElevenLabs may be more consistent. Gemini prioriti
 - Text-to-speech with OpenAI, Gemini, ElevenLabs, or local mock audio
 - Persian and English rewrite or translation before generation
 - Provider-aware voices or Gemini voice directions
+- Six branded voice characters: Chloe, Vivian, Mia, Titan, Vincent, and Adam
+- Provider-specific TTS adapters that keep character identity separate from tone delivery
 - Generation modes: lowest quota usage, balanced, and highest consistency
 - Long-form Gemini consistency warnings
 - Browser-local history with cached audio playback and download actions
@@ -73,6 +75,37 @@ ELEVENLABS_API_KEY=...
 ELEVENLABS_VOICE_ID=...
 OPENAI_API_KEY=<your-openai-api-key>
 ```
+
+## Voice Characters And Tones
+
+Voxa keeps one universal voice and tone config in `src/lib/voice-config.ts`.
+
+Characters control the base speaker:
+
+- Chloe: young, playful, trendy valley-girl style
+- Vivian: polished professional assistant
+- Mia: thin, soft, light, airy feminine voice
+- Titan: extremely deep, thick masculine voice
+- Vincent: cinematic dubbed narrator
+- Adam: balanced, natural, trustworthy male voice
+
+Tones control delivery only:
+
+- Calm, Warm, Cheerful, Whisper, Energetic, Cinematic, Intimate, Storyteller
+
+Provider adapters translate the same character/tone pair differently:
+
+- OpenAI receives a fixed provider voice ID plus detailed natural-language instructions.
+- Gemini receives stricter identity-preservation prompts and character-specific prebuilt voice mapping.
+- ElevenLabs prioritizes stable voice IDs and voice settings such as stability, similarity boost, style, speed, and speaker boost.
+
+To compare tone differences for one character, start the app and run:
+
+```bash
+npm run samples:tones -- chloe
+```
+
+Generated comparison files are written to `samples/tts-tone-comparison/` and ignored by Git.
 
 ## Scripts
 

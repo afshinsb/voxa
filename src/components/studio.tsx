@@ -39,6 +39,7 @@ import { Waveform } from "@/components/waveform";
 import { voiceProfiles, voiceStyles } from "@/lib/constants";
 import { blobFromBase64, clearHistoryAudioCache, getHistoryAudioBlob, pruneHistoryAudioCache, saveHistoryAudio } from "@/lib/audio-cache";
 import { cn } from "@/lib/cn";
+import { getTonePreset, getVoiceCharacter, type VoiceCharacterId } from "@/lib/voice-config";
 import { HistoryItem, useStudioStore } from "@/store/studio-store";
 import type { TtsChunkingMode, TtsGenerationMode } from "@/providers/tts/types";
 
@@ -58,6 +59,8 @@ type TtsResponse = {
   extension: string;
   provider: string;
   model: string;
+  character?: { id: string; displayName: string };
+  tone?: { id: string; displayName: string };
 };
 
 type Toast = {
@@ -69,23 +72,27 @@ type Toast = {
 };
 
 const voiceMeta: Record<string, { accent: string; aura: string }> = {
-  Nova: {
+  chloe: {
     accent: "from-[rgba(var(--app-accent-rgb),0.12)] via-white/5 to-transparent",
     aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.08)]",
   },
-  Alloy: {
+  vivian: {
     accent: "from-[rgba(var(--app-accent-rgb),0.1)] via-white/5 to-transparent",
     aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.07)]",
   },
-  Verse: {
+  mia: {
     accent: "from-[rgba(var(--app-accent-rgb),0.11)] via-white/5 to-transparent",
     aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.07)]",
   },
-  Sage: {
+  titan: {
     accent: "from-[rgba(var(--app-accent-rgb),0.09)] via-white/5 to-transparent",
     aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.06)]",
   },
-  Coral: {
+  vincent: {
+    accent: "from-[rgba(var(--app-accent-rgb),0.1)] via-white/5 to-transparent",
+    aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.06)]",
+  },
+  adam: {
     accent: "from-[rgba(var(--app-accent-rgb),0.1)] via-white/5 to-transparent",
     aura: "shadow-[0_18px_54px_rgba(var(--app-accent-rgb),0.06)]",
   },
@@ -283,8 +290,10 @@ export function Studio() {
   const setupRequired = Boolean(status && !demoMode && (!activeVoiceReady || !activeTextReady));
   const canGenerate = text.trim().length > 0 && !busy;
   const isGeminiTts = activeTts?.name === "gemini";
-  const voiceProfileLabel = isGeminiTts ? "Voice directions" : "Voices";
-  const voiceProfileNoun = isGeminiTts ? "direction" : "voice";
+  const selectedCharacter = getVoiceCharacter(voice);
+  const selectedTone = getTonePreset(style);
+  const voiceProfileLabel = "Voice characters";
+  const voiceProfileNoun = "character";
   const estimatedDurationSeconds = Math.max(1, Math.round(text.trim().length / 13 / Math.max(speed, 0.5)));
   const showGeminiLongFormWarning = isGeminiTts && (text.length >= 900 || estimatedDurationSeconds >= 60);
 
@@ -481,6 +490,8 @@ export function Studio() {
         text,
         voice,
         style,
+        characterName: response.character?.displayName ?? selectedCharacter.displayName,
+        toneName: response.tone?.displayName ?? selectedTone.displayName,
         provider: response.provider,
         model: response.model,
         audioUrl: url,
@@ -499,7 +510,7 @@ export function Studio() {
         notify({ title: "Audio cache unavailable", detail: "This generation will play now, but may not remain attached after refresh.", tone: "info" });
       });
       setGenerationProgress(100);
-      notify({ title: "Voice generated", detail: `${voice} ${voiceProfileNoun} is ready in the audio dock.`, tone: "success" });
+      notify({ title: "Voice generated", detail: `${selectedCharacter.displayName} ${voiceProfileNoun} is ready in the audio dock.`, tone: "success" });
     } catch (err) {
       const message = err instanceof Error ? cleanUiError(err.message) : "Voice generation failed.";
       setError(message);
@@ -510,10 +521,10 @@ export function Studio() {
         setGenerationProgress(0);
       }, 360);
     }
-  }, [addHistory, busy, generationMode, notify, setupRequired, speed, style, text, voice, voiceProfileNoun]);
+  }, [addHistory, busy, generationMode, notify, selectedCharacter.displayName, selectedTone.displayName, setupRequired, speed, style, text, voice, voiceProfileNoun]);
 
   const previewVoice = useCallback(
-    async (selectedVoice: string) => {
+    async (selectedVoice: VoiceCharacterId) => {
       if (busy) return;
       if (setupRequired) {
         notify({
@@ -531,8 +542,9 @@ export function Studio() {
       setError("");
 
       try {
+        const previewCharacter = getVoiceCharacter(selectedVoice);
         const response = await apiPost<TtsResponse>("/api/tts", {
-          text: selectedVoice === "Nova" ? "Okay, so this is Nova. Bright, confident, and honestly kind of iconic." : "Voxa turns text into natural, studio-grade voice.",
+          text: `This is ${previewCharacter.displayName}. Same speaker, different delivery when you change tone.`,
           voice: selectedVoice,
           style,
           speed,
@@ -546,7 +558,7 @@ export function Studio() {
         });
         setDownloadName(`voxa-preview-${Date.now()}.${response.extension}`);
         setGenerationProgress(100);
-        notify({ title: "Preview ready", detail: `${selectedVoice} ${voiceProfileNoun} preview loaded in the audio dock.`, tone: "success" });
+        notify({ title: "Preview ready", detail: `${previewCharacter.displayName} ${voiceProfileNoun} preview loaded in the audio dock.`, tone: "success" });
       } catch (err) {
         const message = err instanceof Error ? cleanUiError(err.message) : "Voice preview failed.";
         setError(message);
@@ -762,17 +774,17 @@ export function Studio() {
                 <div className="flex items-center gap-2">
                   <Badge className="hidden border-white/10 bg-white/[0.055] sm:inline-flex">
                     <Radio className="mr-1.5 h-3.5 w-3.5 text-[var(--app-accent-contrast)]" />
-                    {isGeminiTts ? "Voice prompts" : "Fixed voices"}
+                    Character first
                   </Badge>
                 </div>
               </div>
               <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-1 2xl:grid-cols-2">
                 {voiceProfiles.map((profile) => {
-                  const meta = voiceMeta[profile.name] ?? voiceMeta.Nova;
-                  const selected = voice === profile.name;
+                  const meta = voiceMeta[profile.id] ?? voiceMeta.chloe;
+                  const selected = voice === profile.id;
                   return (
                     <article
-                      key={profile.name}
+                      key={profile.id}
                       className={cn(
                         "group relative overflow-hidden rounded-lg border p-3 transition duration-300 hover:-translate-y-0.5 hover:border-[rgba(var(--app-accent-rgb),0.36)]",
                         selected
@@ -786,25 +798,25 @@ export function Studio() {
                       <div className="relative grid gap-2">
                         <div className="grid gap-2 min-[460px]:flex min-[460px]:items-center min-[460px]:justify-between min-[460px]:gap-3">
                           <div className="flex min-w-0 items-center gap-2">
-                            <h3 className="truncate text-base font-semibold text-foreground">{profile.name}</h3>
+                            <h3 className="truncate text-base font-semibold text-foreground">{profile.displayName}</h3>
                             {selected ? <Check className="h-4 w-4 shrink-0 text-primary" /> : null}
                           </div>
 
                           <div className="flex shrink-0 items-center gap-1.5">
-                            {isGeminiTts ? null : <Badge className="hidden border-white/10 bg-black/20 text-[11px] text-muted-foreground 2xl:inline-flex">Provider voice</Badge>}
-                            <Button variant="ghost" size="sm" className="h-8 px-2.5" onClick={() => previewVoice(profile.name)}>
+                            <Badge className="hidden border-white/10 bg-black/20 text-[11px] text-muted-foreground 2xl:inline-flex">{profile.gender}</Badge>
+                            <Button variant="ghost" size="sm" className="h-8 px-2.5" onClick={() => previewVoice(profile.id)}>
                               <Play className="h-3.5 w-3.5" />
                               Preview
                             </Button>
-                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 px-2.5" onClick={() => setVoice(profile.name)}>
+                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 px-2.5" onClick={() => setVoice(profile.id)}>
                               Select
                             </Button>
                           </div>
                         </div>
 
                         <div>
-                          <p className="text-sm leading-5 text-muted-foreground">{profile.identity}</p>
-                          {isGeminiTts ? null : <p className="mt-1 text-xs font-medium text-[var(--app-accent-contrast)]">{profile.role}</p>}
+                          <p className="text-sm leading-5 text-muted-foreground">{profile.description}</p>
+                          <p className="mt-1 text-xs font-medium text-[var(--app-accent-contrast)]">{profile.role}</p>
                         </div>
                       </div>
                     </article>
@@ -817,21 +829,21 @@ export function Studio() {
               <div>
                 <div className="mb-3 flex items-center gap-2 text-sm font-medium text-foreground">
                   <Waves className="h-4 w-4 text-[var(--app-accent-contrast)]" />
-                  Voice delivery style
+                  Tone
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   {voiceStyles.map((item) => (
                     <button
-                      key={item}
-                      onClick={() => setStyle(item)}
+                      key={item.id}
+                      onClick={() => setStyle(item.id)}
                       className={cn(
                         "rounded-lg border px-3 py-3 text-left text-sm transition hover:-translate-y-0.5",
-                        style === item
+                        style === item.id
                           ? "border-primary/45 bg-primary/10 text-foreground shadow-glow"
                           : "border-[var(--app-border)] bg-white/[0.045] text-muted-foreground hover:border-primary/30 hover:text-foreground",
                       )}
                     >
-                      {item}
+                      {item.displayName}
                     </button>
                   ))}
                 </div>
@@ -898,7 +910,7 @@ export function Studio() {
                       <p className="line-clamp-3 min-w-0 break-words text-sm leading-6 text-foreground">{item.text}</p>
                     </button>
                     <div className="mt-3 flex min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground">
-                      <span className="min-w-0 truncate">{item.voice} / {item.style}</span>
+                      <span className="min-w-0 truncate">{item.characterName ?? getVoiceCharacter(item.voice).displayName} / {item.toneName ?? getTonePreset(item.style).displayName}</span>
                       <span className="shrink-0">{new Date(item.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="mt-3 flex gap-2">
@@ -965,7 +977,7 @@ export function Studio() {
               active={busy}
               autoPlayKey={autoPlayKey}
               downloadName={downloadName}
-              title={audioUrl ? `${voice} / ${style}` : busy ? `Generating ${voice} / ${style}` : "No voice generated yet"}
+              title={audioUrl ? `${selectedCharacter.displayName} / ${selectedTone.displayName}` : busy ? `Generating ${selectedCharacter.displayName} / ${selectedTone.displayName}` : "No voice generated yet"}
             />
           </div>
           <div className="hidden shrink-0 gap-2 sm:flex sm:justify-end">

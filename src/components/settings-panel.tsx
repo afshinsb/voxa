@@ -47,7 +47,7 @@ export function SettingsPanel({
                 Provider setup
               </div>
               <div className="grid gap-3 text-sm leading-6 text-muted-foreground">
-                <p>OpenAI is the default stable provider. Gemini is experimental for expressive reads; ElevenLabs is reserved for premium voice consistency when configured.</p>
+                <p>OpenAI is the default stable provider. Gemini is experimental for expressive reads; ElevenLabs is reserved for premium voice consistency when configured. Characters set the base speaker; tones only change delivery.</p>
                 <pre className="overflow-auto rounded-md border border-[var(--app-border)] bg-black/30 p-3 text-xs leading-5 text-foreground">{`# Stable default voice provider
 TTS_PROVIDER=openai
 OPENAI_API_KEY=<your-openai-api-key>
@@ -59,6 +59,10 @@ TEXT_PROVIDER=gemini
 GEMINI_API_KEY=<your-gemini-api-key>
 GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
 GEMINI_TEXT_MODEL=gemini-2.0-flash
+
+# Optional per-character voice IDs
+ELEVENLABS_VOICE_ID_CHLOE=
+ELEVENLABS_VOICE_ID_TITAN=
 
 # Demo mode
 TTS_PROVIDER=mock

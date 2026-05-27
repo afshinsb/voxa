@@ -3,13 +3,17 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { sampleText, voiceProfiles, voiceStyles } from "@/lib/constants";
+import { getTonePreset, getVoiceCharacter, normalizeCharacterId, normalizeToneId } from "@/lib/voice-config";
+import type { TonePresetId, VoiceCharacterId } from "@/lib/voice-config";
 import type { TtsGenerationMode } from "@/providers/tts/types";
 
 export interface HistoryItem {
   id: string;
   text: string;
-  voice: string;
-  style: string;
+  voice: VoiceCharacterId;
+  style: TonePresetId;
+  characterName?: string;
+  toneName?: string;
   provider: string;
   model: string;
   audioUrl?: string;
@@ -20,14 +24,14 @@ export interface HistoryItem {
 
 interface StudioState {
   text: string;
-  voice: string;
-  style: string;
+  voice: VoiceCharacterId;
+  style: TonePresetId;
   speed: number;
   generationMode: TtsGenerationMode;
   history: HistoryItem[];
   setText: (text: string) => void;
-  setVoice: (voice: string) => void;
-  setStyle: (style: string) => void;
+  setVoice: (voice: VoiceCharacterId) => void;
+  setStyle: (style: TonePresetId) => void;
   setSpeed: (speed: number) => void;
   setGenerationMode: (mode: TtsGenerationMode) => void;
   addHistory: (item: HistoryItem) => void;
@@ -40,19 +44,28 @@ export const useStudioStore = create<StudioState>()(
   persist(
     (set) => ({
       text: sampleText,
-      voice: voiceProfiles[0].name,
-      style: voiceStyles[0],
+      voice: voiceProfiles[0].id,
+      style: voiceStyles[0].id,
       speed: 1,
       generationMode: "lowest_quota",
       history: [],
       setText: (text) => set({ text }),
-      setVoice: (voice) => set({ voice }),
-      setStyle: (style) => set({ style }),
+      setVoice: (voice) => set({ voice: normalizeCharacterId(voice) }),
+      setStyle: (style) => set({ style: normalizeToneId(style) }),
       setSpeed: (speed) => set({ speed }),
       setGenerationMode: (generationMode) => set({ generationMode }),
       addHistory: (item) =>
         set((state) => ({
-          history: [item, ...state.history].slice(0, 12),
+          history: [
+            {
+              ...item,
+              voice: normalizeCharacterId(item.voice),
+              style: normalizeToneId(item.style),
+              characterName: item.characterName ?? getVoiceCharacter(item.voice).displayName,
+              toneName: item.toneName ?? getTonePreset(item.style).displayName,
+            },
+            ...state.history,
+          ].slice(0, 12),
         })),
       attachHistoryAudio: (id, audioUrl) =>
         set((state) => ({
@@ -63,12 +76,28 @@ export const useStudioStore = create<StudioState>()(
     }),
     {
       name: "voxa-studio",
-      version: 1,
+      version: 2,
       migrate: (persistedState, version) => {
-        if (version < 1 && persistedState && typeof persistedState === "object") {
+        if (persistedState && typeof persistedState === "object") {
+          const state = persistedState as Partial<StudioState>;
+          const voice = normalizeCharacterId(state.voice);
+          const style = normalizeToneId(state.style);
           return {
-            ...persistedState,
-            generationMode: "lowest_quota",
+            ...state,
+            voice,
+            style,
+            generationMode: state.generationMode ?? "lowest_quota",
+            history: (state.history ?? []).map((item) => {
+              const normalizedVoice = normalizeCharacterId(item.voice);
+              const normalizedTone = normalizeToneId(item.style);
+              return {
+                ...item,
+                voice: normalizedVoice,
+                style: normalizedTone,
+                characterName: getVoiceCharacter(normalizedVoice).displayName,
+                toneName: getTonePreset(normalizedTone).displayName,
+              };
+            }),
           } as StudioState;
         }
 

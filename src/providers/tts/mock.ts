@@ -1,3 +1,4 @@
+import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
 function writeString(view: DataView, offset: number, value: string) {
@@ -56,6 +57,14 @@ export class MockTtsProvider implements TtsProvider {
       extension: "wav",
       provider: this.name,
       model: this.model,
+      character: {
+        id: getVoiceCharacter(input.voice).id,
+        displayName: getVoiceCharacter(input.voice).displayName,
+      },
+      tone: {
+        id: getTonePreset(input.style).id,
+        displayName: getTonePreset(input.style).displayName,
+      },
       durationHintSeconds: Math.min(8, Math.max(1.8, input.text.length / 42 / input.speed)),
     };
   }
