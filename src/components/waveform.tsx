@@ -39,11 +39,11 @@ export function Waveform({
 
   useEffect(() => {
     const audio = audioRef.current;
-    if (!audio || !audioUrl || !autoPlayKey || active) return;
+    if (!audio || !audioUrl || !autoPlayKey) return;
 
     audio.currentTime = 0;
     audio.play().catch(() => undefined);
-  }, [active, audioUrl, autoPlayKey]);
+  }, [audioUrl, autoPlayKey]);
 
   useEffect(() => {
     if (!playing) return;
@@ -100,7 +100,7 @@ export function Waveform({
       <button
         type="button"
         onClick={togglePlayback}
-        disabled={!audioUrl || active}
+        disabled={!audioUrl}
         className="grid h-9 w-9 place-items-center rounded-md bg-[rgba(var(--app-accent-rgb),0.1)] text-[var(--app-accent-contrast)] transition hover:bg-[rgba(var(--app-accent-rgb),0.16)] disabled:cursor-not-allowed disabled:opacity-45 sm:h-10 sm:w-10"
         aria-label={playing ? "Pause audio" : "Play audio"}
       >

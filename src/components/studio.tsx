@@ -647,7 +647,7 @@ export function Studio() {
         </div>
       </header>
 
-      <div className="mx-auto grid max-w-[1500px] gap-5 px-3 py-4 sm:px-6 sm:py-5 lg:grid-cols-[4.5rem_minmax(0,1fr)_25rem] lg:px-8">
+      <div className={cn("mx-auto grid max-w-[1500px] gap-5 px-3 py-4 sm:px-6 sm:py-5 lg:px-8", historyOpen ? "lg:grid-cols-[4.5rem_minmax(0,1fr)_25rem]" : "lg:grid-cols-[4.5rem_minmax(0,1fr)]")}>
         <nav className="hidden rounded-xl border border-[var(--app-border)] bg-black/24 p-2 shadow-2xl backdrop-blur-xl lg:grid lg:content-start lg:gap-2">
           <Button variant="ghost" size="icon" aria-label="Rewrite text" onClick={() => openTransform("rewrite")}>
             <WandSparkles className="h-4 w-4" />
@@ -796,27 +796,25 @@ export function Studio() {
                       <div className={cn("absolute inset-x-0 top-0 h-20 bg-gradient-to-br opacity-75 transition group-hover:opacity-95", meta.accent)} />
 
                       <div className="relative grid gap-2">
-                        <div className="grid gap-2 min-[460px]:flex min-[460px]:items-center min-[460px]:justify-between min-[460px]:gap-3">
+                        <div className="grid gap-2 min-[540px]:grid-cols-[minmax(0,1fr)_auto] min-[540px]:items-start">
                           <div className="flex min-w-0 items-center gap-2">
                             <h3 className="truncate text-base font-semibold text-foreground">{profile.displayName}</h3>
                             {selected ? <Check className="h-4 w-4 shrink-0 text-primary" /> : null}
                           </div>
 
-                          <div className="flex shrink-0 items-center gap-1.5">
-                            <Badge className="hidden border-white/10 bg-black/20 text-[11px] text-muted-foreground 2xl:inline-flex">{profile.gender}</Badge>
-                            <Button variant="ghost" size="sm" className="h-8 px-2.5" onClick={() => previewVoice(profile.id)}>
+                          <div className="grid grid-cols-2 gap-1.5 min-[540px]:flex min-[540px]:shrink-0 min-[540px]:items-center">
+                            <Button variant="ghost" size="sm" className="h-8 min-w-0 px-2.5" onClick={() => previewVoice(profile.id)}>
                               <Play className="h-3.5 w-3.5" />
                               Preview
                             </Button>
-                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 px-2.5" onClick={() => setVoice(profile.id)}>
+                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 min-w-0 px-2.5" onClick={() => setVoice(profile.id)}>
                               Select
                             </Button>
                           </div>
                         </div>
 
-                        <div>
-                          <p className="text-sm leading-5 text-muted-foreground">{profile.description}</p>
-                          <p className="mt-1 text-xs font-medium text-[var(--app-accent-contrast)]">{profile.role}</p>
+                        <div className="flex">
+                          <Badge className="border-[rgba(var(--app-accent-rgb),0.22)] bg-[rgba(var(--app-accent-rgb),0.08)] text-xs text-[var(--app-accent-contrast)]">{profile.role}</Badge>
                         </div>
                       </div>
                     </article>
@@ -868,7 +866,7 @@ export function Studio() {
           </section>
         </section>
 
-        <aside className={cn("min-w-0 transition lg:block", historyOpen ? "block" : "hidden")}>
+        <aside className={cn("min-w-0 transition", historyOpen ? "block" : "hidden")}>
           <section className="sticky top-20 rounded-xl border border-[var(--app-border)] bg-black/24 p-4 shadow-2xl backdrop-blur-xl">
             <div className="mb-4 flex items-center justify-between gap-3">
               <div className="flex items-center gap-2 text-sm font-medium text-foreground">

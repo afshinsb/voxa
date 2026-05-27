@@ -2,7 +2,7 @@
 
 Voxa is a prerelease multi-provider AI voice studio for writing, refining, and generating narration. It supports OpenAI, Gemini, ElevenLabs, and a local mock provider through server-side Next.js route handlers.
 
-Current prerelease: `0.2.0-alpha.0`
+Current prerelease: `0.3.0-alpha.0`
 
 ## Provider Strategy
 
@@ -150,4 +150,4 @@ Local UI state is stored in browser storage. Generated history audio is cached i
 
 ## Release Notes
 
-`0.2.0-alpha.0` is a prerelease focused on provider behavior, Gemini long-form UX, quota-aware generation, persistent history audio, and the redesigned audio dock/theme.
+`0.3.0-alpha.0` is a prerelease focused on branded voice characters, provider-specific TTS adapters, stronger tone control, generated media cache cleanup, and mobile/player UX fixes.
