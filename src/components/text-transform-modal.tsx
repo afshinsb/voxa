@@ -211,7 +211,7 @@ export function TextTransformModal({
                   onChange={(event) => setDraftText(event.target.value)}
                   placeholder="Paste or edit the text to transform..."
                   dir="auto"
-                  className="min-h-[10rem] border-[var(--app-border)] bg-black/20 text-[15px] leading-7 lg:min-h-[12rem]"
+                  className="min-h-[10rem] border-[var(--app-border)] bg-white/90 text-[15px] leading-7 dark:bg-black/20 lg:min-h-[12rem]"
                 />
               </div>
               <div className="grid min-h-0 gap-2">
@@ -221,7 +221,7 @@ export function TextTransformModal({
                 onChange={(event) => setPreview(event.target.value)}
                 placeholder="Your rewritten or translated preview will appear here..."
                 dir="auto"
-                className="min-h-[12rem] border-[var(--app-border)] bg-black/20 text-[15px] leading-7 lg:min-h-[17rem]"
+                className="min-h-[12rem] border-[var(--app-border)] bg-white/90 text-[15px] leading-7 dark:bg-black/20 lg:min-h-[17rem]"
               />
               </div>
             </div>

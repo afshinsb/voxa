@@ -711,7 +711,7 @@ export function Studio() {
               </div>
             ) : null}
 
-            <div className="relative overflow-hidden rounded-xl border border-[var(--app-border)] bg-black/30 shadow-inner">
+            <div className="relative overflow-hidden rounded-xl border border-[var(--app-border)] bg-white/90 shadow-inner dark:bg-black/30">
               <div className="flex items-center justify-between border-b border-[var(--app-border)] px-4 py-3 text-xs text-muted-foreground">
                 <span>Script editor</span>
                 <span>{text.length.toLocaleString()} characters</span>
