@@ -964,7 +964,7 @@ export function Studio() {
         {busy ? (
           <>
             <div
-              className="absolute inset-y-0 left-0 bg-[linear-gradient(90deg,rgba(var(--app-accent-rgb),0.16),rgba(var(--app-accent-rgb),0.05))] shadow-[0_0_42px_rgba(var(--app-accent-rgb),0.16)] transition-[width] duration-200 ease-out"
+              className="absolute inset-y-0 left-0 bg-[linear-gradient(90deg,rgba(var(--app-accent-rgb),0.26),rgba(var(--app-accent-rgb),0.11))] shadow-[0_0_54px_rgba(var(--app-accent-rgb),0.26)] transition-[width] duration-200 ease-out"
               style={{ width: `${generationProgress}%` }}
             />
             <div className="pointer-events-none absolute inset-0 grid place-items-center text-sm font-medium text-foreground/60">
