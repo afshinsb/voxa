@@ -883,7 +883,7 @@ export function Studio() {
                 </Button>
               </div>
             </div>
-            <div className="grid max-h-[calc(100vh-12rem)] gap-3 overflow-y-auto overflow-x-hidden pr-1">
+            <div className="script-editor-scrollbar grid max-h-[calc(100vh-12rem)] gap-3 overflow-y-auto overflow-x-hidden pr-1">
               {history.length ? (
                 history.map((item) => (
                   <article
