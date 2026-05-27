@@ -694,14 +694,6 @@ export function Studio() {
           ) : null}
 
           <div className="rounded-xl border border-[var(--app-border)] bg-[linear-gradient(180deg,rgba(255,255,255,0.092),rgba(255,255,255,0.032))] p-4 shadow-[var(--app-shadow)] backdrop-blur-xl sm:p-6">
-            <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <Badge className="mb-3 border-[rgba(var(--app-accent-rgb),0.24)] bg-[rgba(var(--app-accent-rgb),0.08)] text-[var(--app-accent-contrast)]">Studio canvas</Badge>
-                <h1 className="text-2xl font-semibold tracking-tight text-foreground sm:text-3xl">Write the script. Generate the voice.</h1>
-                <p className="mt-2 text-sm leading-6 text-muted-foreground">Text tools are separate. Voice controls only affect delivery.</p>
-              </div>
-            </div>
-
             {error ? (
               <div className="mb-4 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-red-100">
                 <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
