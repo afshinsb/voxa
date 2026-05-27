@@ -1,0 +1,192 @@
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: 220 24% 98%;
+  --foreground: 222 32% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 32% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 32% 11%;
+  --primary: 266 13% 40%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 220 18% 94%;
+  --secondary-foreground: 222 32% 11%;
+  --muted: 220 18% 94%;
+  --muted-foreground: 218 12% 40%;
+  --accent: 266 11% 46%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 73% 57%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 220 13% 82%;
+  --input: 220 13% 82%;
+  --ring: 266 13% 40%;
+  --radius: 0.5rem;
+  --app-bg: #f8fafc;
+  --app-panel: #ffffff;
+  --app-panel-strong: #ffffff;
+  --app-border: rgba(31, 41, 55, 0.14);
+  --app-muted-panel: rgba(248, 250, 252, 0.82);
+  --app-accent-rgb: 103, 96, 122;
+  --app-accent-soft-rgb: 166, 160, 181;
+  --app-accent-contrast: #625b74;
+  --app-accent-light: #c9c4d2;
+  --app-glow-a: rgba(103, 96, 122, 0.1);
+  --app-glow-b: rgba(166, 160, 181, 0.08);
+  --app-shadow: 0 24px 70px rgba(15, 23, 42, 0.14);
+  --app-shadow-soft: 0 12px 34px rgba(15, 23, 42, 0.09);
+}
+
+.dark {
+  --background: 220 18% 4%;
+  --foreground: 210 28% 95%;
+  --card: 220 17% 7%;
+  --card-foreground: 210 28% 95%;
+  --popover: 220 17% 7%;
+  --popover-foreground: 210 28% 95%;
+  --primary: 266 18% 72%;
+  --primary-foreground: 340 16% 10%;
+  --secondary: 216 13% 14%;
+  --secondary-foreground: 210 28% 95%;
+  --muted: 218 13% 13%;
+  --muted-foreground: 215 12% 64%;
+  --accent: 266 14% 62%;
+  --accent-foreground: 30 12% 9%;
+  --destructive: 0 73% 57%;
+  --destructive-foreground: 210 28% 95%;
+  --border: 216 15% 18%;
+  --input: 216 15% 18%;
+  --ring: 266 18% 72%;
+  --app-bg: #07070a;
+  --app-panel: #0b0b10;
+  --app-panel-strong: #101018;
+  --app-border: rgba(255, 255, 255, 0.1);
+  --app-muted-panel: rgba(255, 255, 255, 0.045);
+  --app-accent-rgb: 170, 159, 196;
+  --app-accent-soft-rgb: 136, 129, 154;
+  --app-accent-contrast: #aa9fc4;
+  --app-accent-light: #d8d2e5;
+  --app-glow-a: rgba(170, 159, 196, 0.1);
+  --app-glow-b: rgba(136, 129, 154, 0.08);
+  --app-shadow: 0 30px 80px rgba(0, 0, 0, 0.42);
+  --app-shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.28);
+}
+
+* {
+  border-color: hsl(var(--border));
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg) 100%);
+}
+
+.app-shell {
+  background:
+    radial-gradient(circle at 18% 0%, var(--app-glow-a), transparent 24rem),
+    radial-gradient(circle at 82% 8%, var(--app-glow-b), transparent 24rem),
+    linear-gradient(180deg, var(--app-bg) 0%, var(--app-bg) 100%);
+}
+
+.app-panel {
+  background: color-mix(in srgb, var(--app-panel) 92%, transparent);
+  border-color: var(--app-border);
+}
+
+.app-panel-strong {
+  background: color-mix(in srgb, var(--app-panel-strong) 96%, transparent);
+  border-color: var(--app-border);
+}
+
+.app-muted-panel {
+  background: var(--app-muted-panel);
+  border-color: var(--app-border);
+}
+
+::selection {
+  background: rgba(var(--app-accent-rgb), 0.26);
+  color: #f8fafc;
+}
+
+.script-editor-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(var(--app-accent-rgb), 0.58) rgba(255, 255, 255, 0.055);
+}
+
+.script-editor-scrollbar::-webkit-scrollbar {
+  width: 0.65rem;
+}
+
+.script-editor-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.045);
+  border-left: 1px solid var(--app-border);
+}
+
+.script-editor-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(var(--app-accent-rgb), 0.46);
+  border: 2px solid rgba(4, 6, 9, 0.92);
+  border-radius: 999px;
+}
+
+.script-editor-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(var(--app-accent-rgb), 0.64);
+}
+
+.light .script-editor-scrollbar {
+  scrollbar-color: rgba(var(--app-accent-rgb), 0.55) rgba(15, 23, 42, 0.08);
+}
+
+.light .script-editor-scrollbar::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.06);
+}
+
+.light .script-editor-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(var(--app-accent-rgb), 0.45);
+  border-color: rgba(244, 240, 232, 0.95);
+}
+
+.glass {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.025));
+  border: 1px solid rgba(255, 255, 255, 0.085);
+  box-shadow: var(--app-shadow);
+  backdrop-filter: blur(8px);
+}
+
+.grid-mask {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+}
+
+@keyframes meter {
+  0%, 100% {
+    transform: scaleY(0.55);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes shimmer {
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes spectrum {
+  0%, 100% {
+    transform: scaleY(0.38);
+    opacity: 0.45;
+  }
+  50% {
+    transform: scaleY(1);
+    opacity: 0.95;
+  }
+}
+
