@@ -897,23 +897,23 @@ export function Studio() {
                 </Button>
               </div>
             </div>
-            <div className="grid max-h-[calc(100vh-12rem)] gap-3 overflow-auto pr-1">
+            <div className="grid max-h-[calc(100vh-12rem)] gap-3 overflow-y-auto overflow-x-hidden pr-1">
               {history.length ? (
                 history.map((item) => (
                   <article
                     key={item.id}
-                    className="rounded-lg border border-[var(--app-border)] bg-white/[0.045] p-3 transition hover:border-primary/35"
+                    className="min-w-0 overflow-hidden rounded-lg border border-[var(--app-border)] bg-white/[0.045] p-3 transition hover:border-primary/35"
                   >
                     <button
                       type="button"
                       onClick={() => void loadHistoryItem(item)}
-                      className="block w-full text-left"
+                      className="block w-full min-w-0 text-left"
                     >
-                      <p className="line-clamp-3 text-sm leading-6 text-foreground">{item.text}</p>
+                      <p className="line-clamp-3 min-w-0 break-words text-sm leading-6 text-foreground">{item.text}</p>
                     </button>
-                    <div className="mt-3 flex items-center justify-between gap-2 text-xs text-muted-foreground">
-                      <span>{item.voice} / {item.style}</span>
-                      <span>{new Date(item.createdAt).toLocaleDateString()}</span>
+                    <div className="mt-3 flex min-w-0 items-center justify-between gap-2 text-xs text-muted-foreground">
+                      <span className="min-w-0 truncate">{item.voice} / {item.style}</span>
+                      <span className="shrink-0">{new Date(item.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="mt-3 flex gap-2">
                       <Button variant="ghost" size="sm" onClick={() => void loadHistoryItem(item)}>
