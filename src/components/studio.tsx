@@ -601,7 +601,7 @@ export function Studio() {
   }, [generate, openTransform]);
 
   return (
-    <main className="app-shell relative min-h-screen overflow-hidden pb-44 text-foreground sm:pb-36">
+    <main className="app-shell relative min-h-screen overflow-hidden pb-24 text-foreground sm:pb-36">
       <AnimatedBackground />
       <CommandPalette
         open={paletteOpen}
@@ -960,7 +960,7 @@ export function Studio() {
         ) : null}
       </div>
 
-      <section className="fixed inset-x-0 bottom-0 z-30 overflow-hidden border-t border-[var(--app-border)] bg-[color-mix(in_srgb,var(--app-panel-strong)_92%,transparent)] px-4 py-3 backdrop-blur-xl">
+      <section className="fixed inset-x-0 bottom-0 z-30 overflow-hidden border-t border-[var(--app-border)] bg-[color-mix(in_srgb,var(--app-panel-strong)_92%,transparent)] px-3 py-2 backdrop-blur-xl sm:px-4 sm:py-3">
         {busy ? (
           <>
             <div
@@ -972,7 +972,7 @@ export function Studio() {
             </div>
           </>
         ) : null}
-        <div className="relative mx-auto flex max-w-[1500px] flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative mx-auto flex max-w-[1500px] items-center gap-2 sm:gap-3">
           <div className="min-w-0 flex-1">
             <Waveform
               audioUrl={audioUrl}
@@ -981,7 +981,7 @@ export function Studio() {
               title={audioUrl ? `${voice} / ${style}` : busy ? `Generating ${voice} / ${style}` : "No voice generated yet"}
             />
           </div>
-          <div className="flex shrink-0 gap-2 sm:justify-end">
+          <div className="hidden shrink-0 gap-2 sm:flex sm:justify-end">
             <Button variant="outline" className="w-full sm:w-auto" onClick={loadStudioSample}>
               <RotateCcw className="h-4 w-4" />
               Sample

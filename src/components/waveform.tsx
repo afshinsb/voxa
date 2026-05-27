@@ -73,8 +73,7 @@ export function Waveform({
   return (
     <div
       className={cn(
-        "grid min-w-0 gap-3",
-        "sm:grid-cols-[auto_minmax(0,1fr)_auto] sm:items-center",
+        "grid min-w-0 grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-2 sm:gap-3",
       )}
     >
       <audio
@@ -92,16 +91,16 @@ export function Waveform({
         type="button"
         onClick={togglePlayback}
         disabled={!audioUrl || active}
-        className="grid h-10 w-10 place-items-center rounded-md bg-[rgba(var(--app-accent-rgb),0.1)] text-[var(--app-accent-contrast)] transition hover:bg-[rgba(var(--app-accent-rgb),0.16)] disabled:cursor-not-allowed disabled:opacity-45"
+        className="grid h-9 w-9 place-items-center rounded-md bg-[rgba(var(--app-accent-rgb),0.1)] text-[var(--app-accent-contrast)] transition hover:bg-[rgba(var(--app-accent-rgb),0.16)] disabled:cursor-not-allowed disabled:opacity-45 sm:h-10 sm:w-10"
         aria-label={playing ? "Pause audio" : "Play audio"}
       >
         {playing ? <Pause className="h-4 w-4" /> : <Play className="h-4 w-4" />}
       </button>
 
       <div className="min-w-0">
-        <div className="mb-1.5 flex items-center justify-between gap-3 text-xs">
+        <div className="mb-0.5 flex items-center justify-between gap-2 text-[11px] sm:mb-1.5 sm:gap-3 sm:text-xs">
           <span className="truncate font-medium text-foreground">{title ?? (audioUrl ? "Generated audio" : active ? "Generating audio" : "No voice generated yet")}</span>
-          <span className="shrink-0 text-muted-foreground">
+          <span className="hidden shrink-0 text-muted-foreground min-[420px]:inline">
             {formatTime(currentTime)} / {formatTime(duration)}
           </span>
         </div>
@@ -110,7 +109,7 @@ export function Waveform({
           type="button"
           onClick={seek}
           disabled={!audioUrl || !duration}
-          className="group relative h-7 w-full overflow-hidden px-1 transition disabled:cursor-default"
+          className="group relative h-5 w-full overflow-hidden px-1 transition disabled:cursor-default sm:h-7"
           aria-label="Seek audio"
         >
           <span className="absolute inset-x-1 top-1/2 h-px -translate-y-1/2 bg-foreground/12" />
