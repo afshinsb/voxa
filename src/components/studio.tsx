@@ -796,18 +796,20 @@ export function Studio() {
                       <div className={cn("absolute inset-x-0 top-0 h-20 bg-gradient-to-br opacity-75 transition group-hover:opacity-95", meta.accent)} />
 
                       <div className="relative grid gap-2">
-                        <div className="grid gap-2 min-[540px]:grid-cols-[minmax(0,1fr)_auto] min-[540px]:items-start">
-                          <div className="flex min-w-0 items-center gap-2">
-                            <h3 className="truncate text-base font-semibold text-foreground">{profile.displayName}</h3>
+                        <div className="grid grid-cols-[minmax(4.5rem,1fr)_auto] items-start gap-2">
+                          <div className="flex min-w-0 items-center gap-2 pt-1">
+                            <h3 className="min-w-0 text-base font-semibold text-foreground">{profile.displayName}</h3>
                             {selected ? <Check className="h-4 w-4 shrink-0 text-primary" /> : null}
                           </div>
 
-                          <div className="grid grid-cols-2 gap-1.5 min-[540px]:flex min-[540px]:shrink-0 min-[540px]:items-center">
-                            <Button variant="ghost" size="sm" className="h-8 min-w-0 px-2.5" onClick={() => previewVoice(profile.id)}>
+                          <div className="flex shrink-0 items-center gap-1.5">
+                            <Button variant="ghost" size="icon" className="group/preview relative h-8 w-8" onClick={() => previewVoice(profile.id)} aria-label={`Preview ${profile.displayName}`}>
                               <Play className="h-3.5 w-3.5" />
-                              Preview
+                              <span className="pointer-events-none absolute -top-9 left-1/2 z-10 -translate-x-1/2 rounded-md border border-[var(--app-border)] bg-[var(--app-panel-strong)] px-2 py-1 text-xs text-foreground opacity-0 shadow-[var(--app-shadow-soft)] transition group-hover/preview:opacity-100">
+                                Preview
+                              </span>
                             </Button>
-                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 min-w-0 px-2.5" onClick={() => setVoice(profile.id)}>
+                            <Button variant={selected ? "default" : "outline"} size="sm" className="h-8 px-2.5" onClick={() => setVoice(profile.id)}>
                               Select
                             </Button>
                           </div>
