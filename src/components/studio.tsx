@@ -253,6 +253,7 @@ export function Studio() {
   const [status, setStatus] = useState<ProviderStatus | null>(null);
   const [statusLoading, setStatusLoading] = useState(true);
   const [audioUrl, setAudioUrl] = useState("");
+  const [autoPlayKey, setAutoPlayKey] = useState(0);
   const [downloadName, setDownloadName] = useState("voxa-audio.mp3");
   const [busy, setBusy] = useState(false);
   const [generationProgress, setGenerationProgress] = useState(0);
@@ -377,29 +378,9 @@ export function Studio() {
   }, [busy, generationEstimateMs]);
 
   useEffect(() => {
-    let cancelled = false;
-
-    async function hydrateHistoryAudio() {
-      if (!history.length) return;
-
-      pruneHistoryAudioCache(history.map((item) => item.id)).catch(() => undefined);
-
-      for (const item of history) {
-        if (item.audioUrl) continue;
-
-        const blob = await getHistoryAudioBlob(item.id).catch(() => undefined);
-        if (!blob || cancelled) continue;
-
-        attachHistoryAudio(item.id, URL.createObjectURL(blob));
-      }
-    }
-
-    hydrateHistoryAudio();
-
-    return () => {
-      cancelled = true;
-    };
-  }, [attachHistoryAudio, history]);
+    if (!history.length) return;
+    pruneHistoryAudioCache(history.map((item) => item.id)).catch(() => undefined);
+  }, [history]);
 
   const openTransform = useCallback((mode: TransformMode) => {
     setTransformMode(mode);
@@ -413,10 +394,14 @@ export function Studio() {
 
   const resolveHistoryAudio = useCallback(
     async (item: HistoryItem) => {
-      if (item.audioUrl) return item.audioUrl;
-
       const blob = await getHistoryAudioBlob(item.id).catch(() => undefined);
-      if (!blob) {
+      if (blob) {
+        const url = URL.createObjectURL(blob);
+        attachHistoryAudio(item.id, url);
+        return url;
+      }
+
+      if (!item.audioUrl) {
         notify({
           title: "Audio unavailable",
           detail: "This older history item does not have cached audio attached.",
@@ -425,15 +410,13 @@ export function Studio() {
         return "";
       }
 
-      const url = URL.createObjectURL(blob);
-      attachHistoryAudio(item.id, url);
-      return url;
+      return item.audioUrl;
     },
     [attachHistoryAudio, notify],
   );
 
   const loadHistoryItem = useCallback(
-    async (item: HistoryItem) => {
+    async (item: HistoryItem, options?: { autoplay?: boolean }) => {
       setText(item.text);
       setVoice(item.voice);
       setStyle(item.style);
@@ -443,6 +426,9 @@ export function Studio() {
 
       setAudioUrl(url);
       setDownloadName(`voxa-history-${item.id}.${item.extension}`);
+      if (options?.autoplay) {
+        setAutoPlayKey((value) => value + 1);
+      }
     },
     [resolveHistoryAudio, setStyle, setText, setVoice],
   );
@@ -916,7 +902,7 @@ export function Studio() {
                       <span className="shrink-0">{new Date(item.createdAt).toLocaleDateString()}</span>
                     </div>
                     <div className="mt-3 flex gap-2">
-                      <Button variant="ghost" size="sm" onClick={() => void loadHistoryItem(item)}>
+                      <Button variant="ghost" size="sm" onClick={() => void loadHistoryItem(item, { autoplay: true })}>
                         <Play className="h-3.5 w-3.5" />
                         Play
                       </Button>
@@ -977,6 +963,7 @@ export function Studio() {
             <Waveform
               audioUrl={audioUrl}
               active={busy}
+              autoPlayKey={autoPlayKey}
               downloadName={downloadName}
               title={audioUrl ? `${voice} / ${style}` : busy ? `Generating ${voice} / ${style}` : "No voice generated yet"}
             />

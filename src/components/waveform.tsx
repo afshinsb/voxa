@@ -15,11 +15,13 @@ function formatTime(value: number) {
 export function Waveform({
   audioUrl,
   active,
+  autoPlayKey = 0,
   downloadName,
   title,
 }: {
   audioUrl?: string;
   active: boolean;
+  autoPlayKey?: number;
   downloadName?: string;
   title?: string;
 }) {
@@ -34,6 +36,14 @@ export function Waveform({
     setCurrentTime(0);
     setDuration(0);
   }, [audioUrl]);
+
+  useEffect(() => {
+    const audio = audioRef.current;
+    if (!audio || !audioUrl || !autoPlayKey || active) return;
+
+    audio.currentTime = 0;
+    audio.play().catch(() => undefined);
+  }, [active, audioUrl, autoPlayKey]);
 
   useEffect(() => {
     if (!playing) return;
