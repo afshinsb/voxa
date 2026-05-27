@@ -719,7 +719,7 @@ export function Studio() {
               <Textarea
                 value={text}
                 onChange={(event) => setText(event.target.value)}
-                placeholder="Paste Persian or English copy here..."
+                placeholder="Paste or write your script here..."
                 dir="auto"
                 className="script-editor-scrollbar min-h-[20rem] rounded-none border-0 bg-transparent px-4 py-4 text-[16px] leading-8 shadow-none focus:ring-0 sm:min-h-[31rem] sm:px-5 sm:py-5"
               />
