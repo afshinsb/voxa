@@ -1,7 +1,7 @@
 import { serverEnv } from "@/lib/env";
 import { ApiError } from "@/lib/http";
 import { detectLanguage } from "@/lib/language";
-import { missingEnvFor } from "@/lib/provider-config";
+import { missingEnvFor, modelForProvider } from "@/lib/provider-config";
 import type { RewriteRequest, TextProvider, TextResult } from "./types";
 
 function prompt(mode: "rewrite" | "translate", input: RewriteRequest) {
@@ -18,7 +18,7 @@ function prompt(mode: "rewrite" | "translate", input: RewriteRequest) {
 
 export class GeminiTextProvider implements TextProvider {
   name = "gemini" as const;
-  model = serverEnv("GEMINI_TEXT_MODEL", "gemini-2.0-flash");
+  model = modelForProvider("text", this.name);
 
   isConfigured() {
     return missingEnvFor("text", this.name).length === 0;

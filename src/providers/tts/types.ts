@@ -1,6 +1,7 @@
 import type { TonePresetId, VoiceCharacterId } from "@/lib/voice-config";
+import type { TtsProviderName } from "@/lib/provider-registry";
 
-export type TtsProviderName = "openai" | "gemini" | "elevenlabs" | "mock";
+export type { TtsProviderName } from "@/lib/provider-registry";
 export type TtsGenerationMode = "balanced" | "lowest_quota" | "highest_consistency";
 export type TtsChunkingMode = "single" | "split";
 export type VoiceStyle = TonePresetId;

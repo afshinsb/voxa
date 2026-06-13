@@ -1,13 +1,13 @@
 import { ApiError } from "@/lib/http";
 import { serverEnv } from "@/lib/env";
-import { missingEnvFor } from "@/lib/provider-config";
+import { missingEnvFor, modelForProvider } from "@/lib/provider-config";
 import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
 import { buildOpenAiTtsPayload } from "./adapters/openai";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
 export class OpenAiTtsProvider implements TtsProvider {
   name = "openai" as const;
-  model = serverEnv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts");
+  model = modelForProvider("tts", this.name);
 
   isConfigured() {
     return missingEnvFor("tts", this.name).length === 0;

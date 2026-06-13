@@ -1,3 +1,4 @@
+import { modelForProvider } from "@/lib/provider-config";
 import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
@@ -41,7 +42,7 @@ function createMockWav(text: string, speed: number) {
 
 export class MockTtsProvider implements TtsProvider {
   name = "mock" as const;
-  model = "local-mock-wav";
+  model = modelForProvider("tts", this.name);
 
   isConfigured() {
     return true;

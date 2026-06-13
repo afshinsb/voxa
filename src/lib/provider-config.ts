@@ -1,34 +1,17 @@
 import { activeTextProvider, activeTtsProvider, hasSecret, serverEnv } from "@/lib/env";
+import { providerMetadata, type ProviderKind } from "@/lib/provider-registry";
 
-type ProviderKind = "tts" | "text";
-
-const providerLabels: Record<string, string> = {
-  openai: "OpenAI stable provider",
-  gemini: "Gemini experimental expressive provider",
-  elevenlabs: "ElevenLabs premium voice consistency provider",
-  mock: "Demo mode",
-};
-
-const requirements: Record<ProviderKind, Record<string, string[]>> = {
-  tts: {
-    openai: ["OPENAI_API_KEY"],
-    gemini: ["GEMINI_API_KEY"],
-    elevenlabs: ["ELEVENLABS_API_KEY", "ELEVENLABS_VOICE_ID"],
-    mock: [],
-  },
-  text: {
-    openai: ["OPENAI_API_KEY"],
-    gemini: ["GEMINI_API_KEY"],
-    mock: [],
-  },
+const fallbackModels: Record<ProviderKind, string> = {
+  tts: "local-mock-wav",
+  text: "local-mock-text",
 };
 
 export function providerLabel(name: string) {
-  return providerLabels[name] ?? name;
+  return providerMetadata("tts", name)?.label ?? providerMetadata("text", name)?.label ?? name;
 }
 
 export function requiredEnvFor(kind: ProviderKind, provider: string) {
-  return requirements[kind][provider] ?? [];
+  return [...(providerMetadata(kind, provider)?.requiredEnv ?? [])];
 }
 
 export function missingEnvFor(kind: ProviderKind, provider: string) {
@@ -37,6 +20,12 @@ export function missingEnvFor(kind: ProviderKind, provider: string) {
 
 export function isProviderConfigured(kind: ProviderKind, provider: string) {
   return missingEnvFor(kind, provider).length === 0;
+}
+
+export function modelForProvider(kind: ProviderKind, provider: string) {
+  const model = providerMetadata(kind, provider)?.model;
+  if (!model) return fallbackModels[kind];
+  return model.env ? serverEnv(model.env, model.fallback) : model.fallback;
 }
 
 export function selectedProviderHealth() {
@@ -49,14 +38,14 @@ export function selectedProviderHealth() {
     tts: {
       provider: tts,
       label: providerLabel(tts),
-      model: tts === "openai" ? serverEnv("OPENAI_TTS_MODEL", "gpt-4o-mini-tts") : tts === "gemini" ? serverEnv("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts") : tts === "elevenlabs" ? "eleven_multilingual_v2" : "local-mock-wav",
+      model: modelForProvider("tts", tts),
       configured: ttsMissingEnv.length === 0,
       missingEnv: ttsMissingEnv,
     },
     text: {
       provider: text,
       label: providerLabel(text),
-      model: text === "openai" ? serverEnv("OPENAI_TEXT_MODEL", "gpt-4o-mini") : text === "gemini" ? serverEnv("GEMINI_TEXT_MODEL", "gemini-2.0-flash") : "local-mock-text",
+      model: modelForProvider("text", text),
       configured: textMissingEnv.length === 0,
       missingEnv: textMissingEnv,
     },

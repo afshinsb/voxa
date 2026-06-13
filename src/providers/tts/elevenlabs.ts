@@ -1,13 +1,13 @@
 import { ApiError } from "@/lib/http";
 import { serverEnv } from "@/lib/env";
-import { missingEnvFor } from "@/lib/provider-config";
+import { missingEnvFor, modelForProvider } from "@/lib/provider-config";
 import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
 import { elevenLabsPayload, elevenLabsVoiceId } from "./adapters/elevenlabs";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
 
 export class ElevenLabsTtsProvider implements TtsProvider {
   name = "elevenlabs" as const;
-  model = "eleven_multilingual_v2";
+  model = modelForProvider("tts", this.name);
 
   isConfigured() {
     return missingEnvFor("tts", this.name).length === 0;

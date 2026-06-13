@@ -1,6 +1,6 @@
 import { ApiError } from "@/lib/http";
 import { serverEnv } from "@/lib/env";
-import { missingEnvFor } from "@/lib/provider-config";
+import { missingEnvFor, modelForProvider } from "@/lib/provider-config";
 import { getTonePreset, getVoiceCharacter } from "@/lib/voice-config";
 import { buildGeminiSpeechPrompt, geminiVoiceName } from "./adapters/gemini";
 import type { TtsProvider, TtsRequest, TtsResponse } from "./types";
@@ -67,7 +67,7 @@ function splitTextForGemini(text: string, maxChars = 900) {
 
 export class GeminiTtsProvider implements TtsProvider {
   name = "gemini" as const;
-  model = serverEnv("GEMINI_TTS_MODEL", "gemini-2.5-flash-preview-tts");
+  model = modelForProvider("tts", this.name);
 
   isConfigured() {
     return missingEnvFor("tts", this.name).length === 0;

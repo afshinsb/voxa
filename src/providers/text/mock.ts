@@ -1,4 +1,5 @@
 import { detectLanguage } from "@/lib/language";
+import { modelForProvider } from "@/lib/provider-config";
 import type { RewriteRequest, TextProvider, TextResult } from "./types";
 
 const warmPrefix = {
@@ -8,7 +9,7 @@ const warmPrefix = {
 
 export class MockTextProvider implements TextProvider {
   name = "mock" as const;
-  model = "local-mock-text";
+  model = modelForProvider("text", this.name);
 
   isConfigured() {
     return true;

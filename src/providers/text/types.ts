@@ -1,4 +1,6 @@
-export type TextProviderName = "openai" | "gemini" | "mock";
+import type { TextProviderName } from "@/lib/provider-registry";
+
+export type { TextProviderName } from "@/lib/provider-registry";
 export type RewriteTone = "Natural" | "Warm" | "Cute" | "Flirty but classy" | "Professional" | "Cinematic" | "Storytelling";
 export type TargetLanguage = "auto" | "fa" | "en";
 

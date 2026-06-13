@@ -253,7 +253,9 @@ The first active execution slice already exists as open GitHub issues. Do not cr
 
 - #11 — 10 Add mock-mode smoke checks and release readiness docs
 
-## Completed work if known
+## Completed work
+
+- #3 02 Add shared provider registry helpers - shipped locally. if known
 
 - Roadmap mirror exists: #1.
 - First active execution issue slice exists: #2 through #11.

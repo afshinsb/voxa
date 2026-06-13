@@ -1,12 +1,13 @@
 import { activeTtsProvider } from "@/lib/env";
+import { TTS_PROVIDER_NAMES, type TtsProviderName } from "@/lib/provider-registry";
 import { ElevenLabsTtsProvider } from "./elevenlabs";
 import { GeminiTtsProvider } from "./gemini";
 import { MockTtsProvider } from "./mock";
 import { OpenAiTtsProvider } from "./openai";
-import type { TtsProvider, TtsProviderName } from "./types";
+import type { TtsProvider } from "./types";
 
 export function createTtsProvider(name = activeTtsProvider()): TtsProvider {
-  switch (name as TtsProviderName) {
+  switch (name) {
     case "mock":
       return new MockTtsProvider();
     case "gemini":
@@ -19,8 +20,12 @@ export function createTtsProvider(name = activeTtsProvider()): TtsProvider {
   }
 }
 
+function createKnownTtsProvider(name: TtsProviderName) {
+  return createTtsProvider(name);
+}
+
 export function listTtsProviders() {
-  return [new OpenAiTtsProvider(), new GeminiTtsProvider(), new ElevenLabsTtsProvider(), new MockTtsProvider()];
+  return TTS_PROVIDER_NAMES.map(createKnownTtsProvider);
 }
 
 export type { TtsRequest, TtsResponse, VoiceStyle } from "./types";

@@ -1,7 +1,7 @@
 import { serverEnv } from "@/lib/env";
 import { ApiError } from "@/lib/http";
 import { detectLanguage } from "@/lib/language";
-import { missingEnvFor } from "@/lib/provider-config";
+import { missingEnvFor, modelForProvider } from "@/lib/provider-config";
 import type { RewriteRequest, TextProvider, TextResult } from "./types";
 
 function systemPrompt(mode: "rewrite" | "translate", targetLanguage?: "fa" | "en") {
@@ -21,7 +21,7 @@ function systemPrompt(mode: "rewrite" | "translate", targetLanguage?: "fa" | "en
 
 export class OpenAiTextProvider implements TextProvider {
   name = "openai" as const;
-  model = serverEnv("OPENAI_TEXT_MODEL", "gpt-4o-mini");
+  model = modelForProvider("text", this.name);
 
   isConfigured() {
     return missingEnvFor("text", this.name).length === 0;
