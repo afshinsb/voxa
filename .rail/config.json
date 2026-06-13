@@ -1,0 +1,13 @@
+{
+  "project_name": "Voxa",
+  "repository": "afshinsb/voxa",
+  "default_branch": "main",
+  "checks": [
+    "npm run check"
+  ],
+  "context_files": [
+    ".rail/AGENTS.md",
+    ".rail/PROJECT.md",
+    ".rail/CODEX.md"
+  ]
+}
