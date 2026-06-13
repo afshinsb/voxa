@@ -9,13 +9,13 @@ AI Rail imports roadmap memory and tracks completed issue state.
 
 <!-- AI RAIL MANAGED ROADMAP START -->
 
-# Voxa — AI Rail Project Memory
+# Voxa - AI Rail Project Memory
 
 ## Product summary
 
-Voxa is a prerelease multi-provider AI voice studio for writing, refining, translating, and generating narration. It is intended to be a trustworthy single-user/local-first studio where a user can paste or write a script, optionally rewrite or translate it, choose a branded voice character/tone/speed, generate narration, play/download the result, and keep a small browser-local history.
+Voxa is a prerelease multi-provider AI voice studio for writing, refining, translating, and generating narration. The functional MVP target is a trustworthy single-user/local-first studio where a user can paste or write a script, optionally rewrite or translate it, choose a branded voice character/tone/speed, generate narration, play/download the result, and keep a small browser-local history.
 
-Functional MVP goal: provider setup is safe and understandable; UI controls accurately reflect backend capability; real-provider and mock-provider flows work through server-side Next.js routes; release confidence can be checked without paid provider keys.
+The MVP should make provider setup safe and understandable, ensure UI controls reflect real backend capability, keep provider calls behind server-side Next.js routes, and provide a mock-mode confidence path that works without paid provider credentials.
 
 ## Stack
 
@@ -24,15 +24,10 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 - State: Zustand with browser persistence.
 - Audio/history storage: browser local storage for history metadata plus IndexedDB for generated audio blobs.
 - Server routes: Next.js route handlers under `src/app/api/*`.
-- Providers:
-  - TTS: OpenAI, Gemini, ElevenLabs, mock.
-  - Text rewrite/translate: OpenAI, Gemini, mock.
+- Providers: OpenAI, Gemini, ElevenLabs, and mock for TTS; OpenAI, Gemini, and mock for text rewrite/translate.
+- Provider backbone: shared provider registry/config helpers exist under `src/lib/provider-registry.ts` and `src/lib/provider-config.ts`.
 - Deployment shape: local `npm run dev`, Next standalone production build, Docker Compose.
-- Known scripts/checks:
-  - `npm run typecheck`
-  - `npm run lint`
-  - `npm run build`
-  - `npm run samples:tones -- <character>`
+- Known scripts/checks: `npm run typecheck`, `npm run lint`, `npm run build`, `npm run samples:tones -- <character>`.
 
 ## Non-negotiables
 
@@ -57,19 +52,13 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 - README describes Voxa as prerelease `0.3.0-alpha.0`.
 - Core app renders `Studio` from `src/app/page.tsx`.
 - Main studio UI is implemented in `src/components/studio.tsx`.
-- API routes exist:
-  - `POST /api/tts`
-  - `POST /api/rewrite`
-  - `POST /api/translate`
-  - `GET /api/providers`
-  - `GET /api/health`
+- API routes exist for TTS, rewrite, translate, provider status, and health.
 - Voice characters and tone presets are centralized in `src/lib/voice-config.ts`.
 - TTS provider implementations exist under `src/providers/tts/`.
 - Text provider implementations exist under `src/providers/text/`.
-- Provider health currently uses env helpers plus `src/lib/provider-config.ts`.
-- `src/lib/env.ts` currently defaults TTS to `openai` and text to `mock`.
-- `.env.example` and README position OpenAI as the stable default and show explicit mock demo mode.
-- Settings UI currently contains static provider setup guidance plus generation mode controls.
+- Provider defaults and docs agree on OpenAI as production default for both voice and text, with explicit mock demo mode.
+- Provider names, labels, required env vars, model defaults, and selected health metadata are centralized enough to reduce drift.
+- Settings UI still contains mostly static provider setup guidance plus generation mode controls.
 - Header/provider health fetches `/api/providers` and shows high-level active provider status.
 - Text rewrite/translate modal is wired to `/api/rewrite` and `/api/translate`.
 - Generate and preview flows are wired to `/api/tts`.
@@ -80,14 +69,13 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 
 ## Missing backend/backbone/configuration
 
-- Provider config knowledge is spread across env helpers, provider config, provider factories, settings copy, and docs.
-- There is no single central provider registry used by routes, health, docs/UI status, and factories.
 - API routes validate empty text but do not strongly validate the full request contract.
-- Invalid provider names can silently fall through to default provider factories.
-- Health/provider diagnostics are useful but too shallow for first-run setup, Docker debugging, or release confidence.
+- Invalid provider names can still silently fall through to default provider factories until provider selection is hardened.
+- Health/provider diagnostics are useful but still too shallow for first-run setup, Docker debugging, or release confidence.
 - Settings panel is mostly static env guidance rather than a live provider status/configuration diagnostic panel.
 - Mock-mode smoke/release checks are not yet formalized.
 - Generation mode capability is provider-specific, but the UI presents it globally.
+- Local history metadata and IndexedDB audio blobs can drift.
 
 ## Fake UI or unimplemented/misleading controls
 
@@ -98,9 +86,6 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 
 ## Risky/broken areas
 
-- Provider defaults/docs drift:
-  - README and `.env.example` position OpenAI as stable default for both TTS and text.
-  - `activeTextProvider()` currently falls back to `mock`.
 - API route request bodies are loosely typed and under-validated.
 - Unknown provider names can resolve to OpenAI instead of explicit safe errors.
 - API error handling can expose raw unexpected/provider messages to clients.
@@ -112,7 +97,7 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 ## Target state
 
 - Provider defaults, README, `.env.example`, `/api/providers`, `/api/health`, and settings UI all tell the same truth.
-- Provider registry/config is centralized enough to avoid future drift.
+- Provider registry/config remains the shared source for provider metadata.
 - API routes validate input clearly and fail safely before provider calls.
 - Unknown provider names return explicit safe errors instead of silently using OpenAI.
 - Client-facing errors are safe and consistent; server logs retain useful non-secret debugging context.
@@ -121,158 +106,6 @@ Functional MVP goal: provider setup is safe and understandable; UI controls accu
 - Local history/audio-cache limitations are clear and recoverable.
 - Mock mode can verify the MVP flow without paid provider credentials.
 - Release readiness is documented and easy to follow.
-
-## Full phased roadmap
-
-### Phase 1 — Foundation / truth alignment
-
-Goal: make repo truth, provider defaults, and diagnostics reliable before adding more features.
-
-Planned work:
-- Align provider defaults across code, README, and `.env.example`.
-- Add centralized provider registry/config helpers.
-- Improve provider and health diagnostics.
-- Document current MVP limits clearly.
-
-Completion criteria:
-- Runtime defaults and docs agree.
-- `/api/providers` and `/api/health` report selected providers clearly.
-- Provider metadata comes from one reliable source or a clearly staged helper.
-- Mock vs production mode is unambiguous.
-
-### Phase 2 — API safety / request contracts
-
-Goal: reduce brittle behavior and make route handlers safe enough for real use.
-
-Planned work:
-- Add shared request validation for TTS and text transforms.
-- Normalize or reject invalid provider names.
-- Clamp/validate speed and text length.
-- Return safe client errors while logging useful server details.
-- Make provider errors consistent across OpenAI, Gemini, ElevenLabs, and mock.
-
-Completion criteria:
-- Bad inputs return clear 4xx errors.
-- Unknown providers do not silently fall through to OpenAI.
-- Client errors do not leak secrets or raw implementation detail.
-- Provider errors are consistent enough for the UI to display safely.
-
-### Phase 3 — UI/backbone connection
-
-Goal: remove misleading controls and connect UI panels to real server state.
-
-Planned work:
-- Replace static provider setup blocks with live `/api/providers` data.
-- Show selected provider, configured/missing env, active model, and demo mode status in settings.
-- Make generation mode copy match backend behavior per provider.
-- Improve preview/generation behavior so history/cache semantics are clear.
-
-Completion criteria:
-- Settings shows live status instead of only static snippets.
-- Missing env var names are visible, but secret values are never exposed.
-- Generation mode UI does not overpromise unsupported behavior.
-- History/audio unavailable states are understandable and recoverable.
-
-### Phase 4 — Core functionality hardening
-
-Goal: make MVP generation flows reliable without adding accounts or heavy architecture.
-
-Planned work:
-- Clarify and harden generation modes.
-- Keep long-form/chunking behavior limited to providers where it is actually supported.
-- Improve local media cache cleanup and unavailable-audio UX.
-- Add focused mock-mode smoke checks.
-
-Completion criteria:
-- Mock mode exercises health, rewrite/translate, and TTS without paid keys.
-- Long-form limitations are clear.
-- Audio/history cache cleanup does not create confusing dead entries.
-- Focused checks catch broken MVP flows quickly.
-
-### Phase 5 — Safety / polish / release readiness
-
-Goal: make Voxa presentable as a functional MVP.
-
-Planned work:
-- Add release-readiness checklist.
-- Add Docker/local deployment troubleshooting.
-- Add focused accessibility/mobile checks for studio, modals, history, and audio dock.
-- Keep visual polish after backbone truth is stable.
-
-Completion criteria:
-- README/docs explain local, Docker, mock, and production setup clearly.
-- Release checklist is usable before tagging/deploying.
-- No high-risk fake UI/backbone mismatch remains.
-- MVP can be demonstrated safely in mock mode.
-
-## Current phase
-
-Current phase: Phase 1 — Foundation / truth alignment.
-
-Reason: the safest first work is correcting provider/default/docs truth before deeper API, settings, and release-readiness work.
-
-## Active execution queue
-
-The first active execution slice already exists as open GitHub issues. Do not create duplicate active-slice issues.
-
-1. #2 — 01 Align provider defaults and documentation truth
-2. #3 — 02 Add shared provider registry helpers
-3. #4 — 03 Add shared API request validation
-4. #5 — 04 Sanitize API error responses
-5. #6 — 05 Harden provider selection for unknown names
-6. #7 — 06 Improve provider and health diagnostics
-7. #8 — 07 Connect settings panel to live provider status
-8. #9 — 08 Make generation mode behavior provider-aware
-9. #10 — 09 Improve local history and audio cache recovery UX
-10. #11 — 10 Add mock-mode smoke checks and release readiness docs
-
-## Issue roadmap grouped by phase
-
-### Phase 1 — Foundation / truth alignment
-
-- #2 — 01 Align provider defaults and documentation truth
-- #3 — 02 Add shared provider registry helpers
-- #7 — 06 Improve provider and health diagnostics
-
-### Phase 2 — API safety / request contracts
-
-- #4 — 03 Add shared API request validation
-- #5 — 04 Sanitize API error responses
-- #6 — 05 Harden provider selection for unknown names
-
-### Phase 3 — UI/backbone connection
-
-- #8 — 07 Connect settings panel to live provider status
-- #9 — 08 Make generation mode behavior provider-aware
-
-### Phase 4 — Core functionality hardening
-
-- #10 — 09 Improve local history and audio cache recovery UX
-
-### Phase 5 — Safety / polish / release readiness
-
-- #11 — 10 Add mock-mode smoke checks and release readiness docs
-
-## Completed work if known
-
-- Roadmap mirror exists: #1.
-- First active execution issue slice exists: #2 through #11.
-- No implementation issues are known complete in this AI Rail sequence.
-
-## Future tasks/backlog
-
-Do not create GitHub issues for these yet unless the roadmap is intentionally expanded:
-
-- Server-side generated media library.
-- User accounts/auth/sync.
-- Provider key management UI.
-- Cloud storage/history sync.
-- Full automated integration suite.
-- New provider additions.
-- Deep UI redesign/polish.
-- PR/CI automation after MVP backbone is stable.
-- Full accessibility audit after MVP backbone is truthful.
-- Full mobile polish after provider/settings/history behavior is stable.
 
 ## Blockers/postponed items
 
@@ -284,24 +117,27 @@ Do not create GitHub issues for these yet unless the roadmap is intentionally ex
 - New provider additions are postponed until the existing provider backbone is stable.
 - Deep UI redesign/polish is postponed until provider truth, API safety, and settings backbone are fixed.
 
+## Completed work summary
+
+Provider default/documentation truth is aligned, and provider metadata is now centralized enough for later health, validation, settings, and provider-selection work to build on it.
+
 ## Next recommended issue/task
 
-Next issue: #2 — 01 Align provider defaults and documentation truth.
+Next recommended task: #4 - 03 Add shared API request validation.
 
-Why first:
-- It is the safest foundation issue.
-- It fixes a real truth mismatch between docs/env expectations and runtime default behavior.
-- Later provider registry, health, and settings work should build on the corrected default strategy.
+Why next:
+- It is the safest next backbone issue after provider defaults and registry are in place.
+- It prevents bad input from reaching provider code.
+- It makes later provider-selection and error-sanitization work cleaner.
 
-Suggested focused checks for #2:
-- `npm run typecheck`
-- Optional quick manual review of README and `.env.example` provider setup snippets.
+Suggested focused check for that task: `npm run typecheck`.
 
-## AI Rail workflow reminder
+## Workflow notes
 
 Human workflow:
 
 ```bash
+rail import
 rail n
 # paste generated prompt into coding agent
 
@@ -311,7 +147,97 @@ rail v
 rail s "type(scope): message"
 ```
 
-The coding agent should read only the current GitHub issue body and this project memory, implement only that issue, then stop for human review.
+The coding agent should read only the current GitHub issue body and this project memory, implement only that issue, then stop for human review. Exact phase/task state lives only in the strict Rail roadmap block below.
+
+<!-- AI RAIL ROADMAP START -->
+
+## Phase P1 - Foundation / truth alignment
+Status: active
+
+### Goal
+Make provider defaults, provider metadata, and setup truth reliable before deeper feature work.
+
+### Completion criteria
+- Runtime defaults and documentation agree on production and mock modes.
+- Provider names, labels, required env variables, and model defaults are centralized.
+- Provider and health diagnostics are clear enough for setup debugging without exposing secrets.
+
+### Tasks
+- [x] #2 | P1-T01 | Align provider defaults and documentation truth
+- [x] #3 | P1-T02 | Add shared provider registry helpers
+- [ ] #7 | P1-T03 | Improve provider and health diagnostics
+- [ ] TBD | P1-T04 | Document current MVP limits after diagnostics stabilize
+
+## Phase P2 - API safety / request contracts
+Status: active
+
+### Goal
+Make route handlers reject invalid input and fail safely before provider calls.
+
+### Completion criteria
+- Bad inputs return clear 4xx responses with stable safe codes.
+- Unknown provider names do not silently call OpenAI.
+- Client-facing errors do not leak raw provider or implementation detail.
+- Existing mock-mode TTS, rewrite, and translate flows still work.
+
+### Tasks
+- [x] #4 | P2-T01 | Add shared API request validation
+- [ ] #5 | P2-T02 | Sanitize API error responses
+- [ ] #6 | P2-T03 | Harden provider selection for unknown names
+- [ ] TBD | P2-T04 | Normalize provider adapter error codes after safety fixes
+
+## Phase P3 - UI/backbone connection
+Status: planned
+
+### Goal
+Remove misleading controls and connect settings/history/generation UI to real backend capability.
+
+### Completion criteria
+- Settings shows live provider status instead of only static snippets.
+- Missing env variable names are visible without secret values.
+- Generation mode guidance is accurate for the active TTS provider.
+- Local history/audio unavailable states are understandable and recoverable.
+
+### Tasks
+- [ ] #8 | P3-T01 | Connect settings panel to live provider status
+- [ ] #9 | P3-T02 | Make generation mode behavior provider-aware
+- [ ] #10 | P3-T03 | Improve local history and audio cache recovery UX
+- [ ] TBD | P3-T04 | Add focused mobile/accessibility cleanup for studio panels
+
+## Phase P4 - Mock confidence / release readiness
+Status: planned
+
+### Goal
+Make Voxa demonstrable and checkable as a functional MVP without paid provider credentials.
+
+### Completion criteria
+- Mock mode verifies health, provider status, rewrite, translate, and TTS flows.
+- Release-readiness docs explain local, Docker, mock, and production checks.
+- MVP checks are lightweight enough to run before shipping future AI Rail issues.
+
+### Tasks
+- [ ] #11 | P4-T01 | Add mock-mode smoke checks and release readiness docs
+- [ ] TBD | P4-T02 | Add Docker troubleshooting notes after smoke path exists
+- [ ] TBD | P4-T03 | Add final MVP demo checklist
+
+## Phase P5 - Post-MVP expansion
+Status: planned
+
+### Goal
+Postpone heavier product work until the functional MVP backbone is safe, truthful, and demo-ready.
+
+### Completion criteria
+- Expansion work is split into future issues only after MVP safety and readiness are stable.
+- Accounts, cloud sync, server media, provider key UI, and new providers are not mixed into MVP backbone issues.
+
+### Tasks
+- [ ] TBD | P5-T01 | Plan server-side generated media library
+- [ ] TBD | P5-T02 | Plan accounts/auth/history sync
+- [ ] TBD | P5-T03 | Plan provider key management UI
+- [ ] TBD | P5-T04 | Plan new provider additions
+- [ ] TBD | P5-T05 | Plan full integration/CI suite
+
+<!-- AI RAIL ROADMAP END -->
 
 <!-- AI RAIL MANAGED ROADMAP END -->
 
