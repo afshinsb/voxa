@@ -8,7 +8,7 @@ export function activeTtsProvider() {
 }
 
 export function activeTextProvider() {
-  return serverEnv("TEXT_PROVIDER", "mock").toLowerCase();
+  return serverEnv("TEXT_PROVIDER", "openai").toLowerCase();
 }
 
 export function hasSecret(name: string) {

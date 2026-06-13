@@ -38,7 +38,7 @@ npm run dev
 
 Open `http://localhost:3000`.
 
-The sample environment uses OpenAI as the stable default. Add an API key before generating production audio:
+The sample environment is production-oriented and selects OpenAI for both voice and text by default. It can be copied directly, but real generation, rewrite, and translation calls require an OpenAI API key:
 
 ```bash
 TTS_PROVIDER=openai
@@ -48,7 +48,7 @@ OPENAI_TTS_MODEL=gpt-4o-mini-tts
 OPENAI_TEXT_MODEL=gpt-4o-mini
 ```
 
-For local testing without API keys:
+For local demo testing without API keys, switch both providers to mock:
 
 ```bash
 TTS_PROVIDER=mock
