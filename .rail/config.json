@@ -3,7 +3,7 @@
   "repository": "afshinsb/voxa",
   "default_branch": "main",
   "checks": [
-    "npm run check"
+    "npm run typecheck"
   ],
   "context_files": [
     ".rail/AGENTS.md",
